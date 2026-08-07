@@ -2,396 +2,568 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dark‑Ops CAD Console</title>
+<title>ER:LC Web CAD</title>
 
 <style>
   body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #0a0a0a;
-    color: #eaeaea;
+    background: #0b0b10;
+    color: #f5f5f5;
     display: flex;
+    height: 100vh;
   }
 
-  /* Sidebar */
   .sidebar {
-    width: 240px;
-    background: rgba(20,20,20,0.6);
-    backdrop-filter: blur(12px);
+    width: 230px;
+    background: #11131a;
+    padding: 16px;
     border-right: 1px solid #222;
-    padding: 20px;
-    height: 100vh;
   }
   .sidebar h2 {
+    margin: 0 0 12px;
     color: #4fc3f7;
-    margin-bottom: 10px;
   }
-  .sidebar a {
-    display: block;
-    padding: 10px 0;
-    color: #b3e5fc;
-    text-decoration: none;
-    border-bottom: 1px solid #333;
+  .sidebar button {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: #1a1d27;
+    border: 1px solid #333;
+    color: #f5f5f5;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .sidebar button:hover {
+    background: #232736;
   }
 
-  /* Main container */
   .main {
     flex: 1;
-    padding: 20px;
+    padding: 16px;
     overflow-y: auto;
     height: 100vh;
   }
 
-  /* Glass panel */
   .panel {
-    background: rgba(30,30,30,0.45);
-    backdrop-filter: blur(10px);
-    border: 1px solid #333;
+    background: #141722;
     border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    transition: all 0.3s ease;
-  }
-
-  /* Collapsible content */
-  .content {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.4s ease;
-  }
-
-  .content.open {
-    max-height: 800px;
-  }
-
-  /* Collapse button */
-  .collapse-btn {
-    background: #111;
-    color: #4fc3f7;
-    padding: 8px 12px;
     border: 1px solid #333;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .panel h3 {
+    margin: 0 0 10px;
+    color: #4fc3f7;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 6px;
+    margin-top: 2px;
+    background: #0f1118;
+    border: 1px solid #333;
+    color: #f5f5f5;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .row > div {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .btn-primary {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #4fc3f7;
+    border: none;
+    color: #000;
     border-radius: 6px;
     cursor: pointer;
-    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  .btn-primary:hover {
+    background: #81d4fa;
+  }
+
+  .call-card {
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #181b26;
+    font-size: 0.9rem;
+  }
+
+  .call-header {
     display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .collapse-btn:hover {
-    background: #1a1a1a;
+    justify-content: space-between;
+    margin-bottom: 4px;
   }
 
-  .arrow {
-    transition: transform 0.3s ease;
-  }
-  .arrow.open {
-    transform: rotate(90deg);
-  }
-
-  /* Animated status lights */
-  .status-light {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
+  .tag {
     display: inline-block;
-    margin-right: 6px;
-    animation: pulse 1.5s infinite;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-right: 4px;
   }
-  @keyframes pulse {
-    0% { opacity: 0.3; }
-    50% { opacity: 1; }
-    100% { opacity: 0.3; }
-  }
-  .green { background: #00e676; }
-  .yellow { background: #ffeb3b; }
-  .red { background: #ff1744; }
+  .tag-prio1 { background: #81c784; }
+  .tag-prio2 { background: #ffb74d; }
+  .tag-prio3 { background: #e57373; }
 
-  /* Search bar */
-  .search-bar input {
-    width: 100%;
-    padding: 10px;
-    background: #111;
-    border: 1px solid #333;
-    color: #fff;
-    border-radius: 6px;
-  }
-
-  /* Radio feed */
-  .radio-feed {
-    height: 120px;
-    overflow-y: auto;
-    background: #111;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #333;
-  }
-
-  /* Map placeholder */
-  .map-box {
-    height: 200px;
-    background: #222;
-    border-radius: 10px;
-    border: 1px solid #444;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #777;
-    font-size: 1.2rem;
-  }
-
-  /* Dispatcher notes */
-  textarea {
-    width: 100%;
-    height: 120px;
-    background: #111;
-    border: 1px solid #333;
-    color: #fff;
-    border-radius: 6px;
-    padding: 10px;
-  }
-
-  /* Tables */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-  table td, table th {
-    border: 1px solid #333;
-    padding: 8px;
-  }
-  table th {
-    background: #1e1e1e;
+  .status-pill {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    background: #4fc3f7;
+    color: #000;
   }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
-  <h2>Dispatch Menu</h2>
-  <a href="#">Active Calls</a>
-  <a href="#">Units</a>
-  <a href="#">Call History</a>
-  <a href="#">Reports</a>
-  <a href="#">Settings</a>
+  <h2>ER:LC CAD</h2>
+  <button onclick="showPanel('create')">Create Call</button>
+  <button onclick="showPanel('active')">Active Calls</button>
+  <button onclick="showPanel('closed')">Closed Calls</button>
+  <button onclick="showPanel('dispatch')">Dispatch Console</button>
+  <button onclick="showPanel('login')">Unit Login</button>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-  <!-- TEMPLATE FOR COLLAPSIBLE PANELS -->
-  <script>
-    function togglePanel(btn, id) {
-      const content = document.getElementById(id);
-      const arrow = btn.querySelector(".arrow");
+  <!-- CREATE CALL PANEL -->
+  <div class="panel" id="panel-create">
+    <h3>Create New Call</h3>
 
-      content.classList.toggle("open");
-      arrow.classList.toggle("open");
-    }
-  </script>
-
-  <!-- LIVE STATUS BAR -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'liveStatus')">
-      <span class="arrow">▶</span> Live Status Bar
-    </button>
-    <div id="liveStatus" class="content">
-      <p><span class="status-light green"></span> System Online</p>
-      <p><span class="status-light yellow"></span> Units En Route</p>
-      <p><span class="status-light green"></span> CAD Sync Active</p>
-    </div>
-  </div>
-
-  <!-- SEARCH BAR -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'searchBar')">
-      <span class="arrow">▶</span> Search Bar
-    </button>
-    <div id="searchBar" class="content">
-      <input type="text" placeholder="Search calls, units, locations...">
-    </div>
-  </div>
-
-  <!-- CALL CLASSIFICATION TAGS -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'callTags')">
-      <span class="arrow">▶</span> Call Classification Tags
-    </button>
-    <div id="callTags" class="content">
-      <span style="background:#4fc3f7;padding:4px 8px;border-radius:6px;">Suspicious Person</span>
-      <span style="background:#ff7043;padding:4px 8px;border-radius:6px;">Property Crime</span>
-      <span style="background:#81c784;padding:4px 8px;border-radius:6px;">Non‑Violent</span>
-    </div>
-  </div>
-
-  <!-- CALL TIMELINE -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'timeline')">
-      <span class="arrow">▶</span> Call Timeline
-    </button>
-    <div id="timeline" class="content">
-      <div>15:08 — Call Received</div>
-      <div>15:09 — Units Dispatched</div>
-      <div>15:10 — CCTV Activated</div>
-    </div>
-  </div>
-
-  <!-- UNIT RADIO FEED -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'radioFeed')">
-      <span class="arrow">▶</span> Unit Radio Feed
-    </button>
-    <div id="radioFeed" class="content">
-      <div class="radio-feed" id="radioBox">
-        <p>[A‑12] En route, ETA 2 minutes.</p>
-        <p>[K‑4] Area sweep beginning.</p>
-        <p>[S‑3] CCTV shows subject still on foot.</p>
+    <div class="row">
+      <div>
+        <label>Call Type</label>
+        <select id="callType">
+          <option>Traffic Stop</option>
+          <option>Pursuit</option>
+          <option>Robbery</option>
+          <option>Suspicious Person</option>
+          <option>Medical</option>
+          <option>Disturbance</option>
+        </select>
       </div>
-      <input id="radioInput" type="text" placeholder="Send radio message...">
-      <button onclick="addRadio()">Send</button>
+
+      <div>
+        <label>Priority</label>
+        <select id="priority">
+          <option value="1">1 - Low</option>
+          <option value="2">2 - Medium</option>
+          <option value="3">3 - High</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Server</label>
+        <select id="server">
+          <option>UK</option>
+          <option>US</option>
+          <option>EU</option>
+        </select>
+      </div>
     </div>
+
+    <div class="row">
+      <div>
+        <label>Location</label>
+        <input id="location" placeholder="Road / landmark">
+      </div>
+      <div>
+        <label>Postal</label>
+        <input id="postal" placeholder="603">
+      </div>
+      <div>
+        <label>Caller</label>
+        <input id="caller" placeholder="Anonymous / Civ name">
+      </div>
+    </div>
+
+    <label>Description</label>
+    <textarea id="description" placeholder="Short summary..."></textarea>
+
+    <label>Units Assigned (comma separated)</label>
+    <input id="units" placeholder="A-12, K-4, S-3">
+
+    <button class="btn-primary" onclick="createCall()">Create Call</button>
   </div>
 
-  <script>
-    function addRadio() {
-      const box = document.getElementById("radioBox");
-      const input = document.getElementById("radioInput");
-      if (input.value.trim() !== "") {
-        box.innerHTML += `<p>${input.value}</p>`;
-        input.value = "";
-        box.scrollTop = box.scrollHeight;
-      }
-    }
-  </script>
-
-  <!-- MAP PANEL -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'mapPanel')">
-      <span class="arrow">▶</span> Map Panel
-    </button>
-    <div id="mapPanel" class="content">
-      <div class="map-box">MAP LOADING...</div>
-    </div>
+  <!-- ACTIVE CALLS PANEL -->
+  <div class="panel" id="panel-active">
+    <h3>Active Calls</h3>
+    <div id="activeCalls"></div>
   </div>
 
-  <!-- OFFICER ACTIONS -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'officerActions')">
-      <span class="arrow">▶</span> Officer Actions
-    </button>
-    <div id="officerActions" class="content">
-      <ul>
-        <li>A‑12: Approaching location.</li>
-        <li>K‑4: Checking alleyway.</li>
-        <li>S‑3: Monitoring CCTV angles.</li>
-      </ul>
-    </div>
+  <!-- CLOSED CALLS PANEL -->
+  <div class="panel" id="panel-closed" style="display:none;">
+    <h3>Closed Calls</h3>
+    <div id="closedCalls"></div>
   </div>
 
-  <!-- UNIT GPS STATUS -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'gpsStatus')">
-      <span class="arrow">▶</span> Unit GPS Status
-    </button>
-    <div id="gpsStatus" class="content">
-      <ul>
-        <li>A‑12 — 0.8 miles out</li>
-        <li>K‑4 — 1.1 miles out</li>
-        <li>S‑3 — Stationary (HQ)</li>
-      </ul>
+  <!-- DISPATCH CONSOLE PANEL -->
+  <div class="panel" id="panel-dispatch" style="display:none;">
+    <h3>Dispatch Console</h3>
+
+    <!-- UNIT STATUS BOARD -->
+    <div style="margin-bottom: 12px;">
+      <h4 style="color:#4fc3f7;margin:0 0 6px;">Unit Status Board</h4>
+      <div id="unitBoard"></div>
     </div>
+
+    <!-- ADD UNIT -->
+    <div class="row">
+      <div>
+        <label>Add Unit</label>
+        <input id="newUnit" placeholder="Unit ID (A-12)">
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button class="btn-primary" onclick="addUnit()">Add Unit</button>
+      </div>
+    </div>
+
+    <hr style="border-color:#333;margin:14px 0;">
+
+    <!-- DEPARTMENT SELECTOR -->
+    <h4 style="color:#4fc3f7;margin:0 0 6px;">Department Selector</h4>
+
+    <div class="row">
+      <div>
+        <label>Select Department</label>
+        <select id="deptSelect">
+          <option value="PD">Police Department</option>
+          <option value="SO">Sheriff’s Office</option>
+          <option value="FD">Fire Department</option>
+          <option value="EMS">EMS / Medical</option>
+          <option value="DOT">DOT / Tow</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Unit ID</label>
+        <input id="deptUnit" placeholder="A-12">
+      </div>
+
+      <div>
+        <label>&nbsp;</label>
+        <button class="btn-primary" onclick="setDepartment()">Set Dept</button>
+      </div>
+    </div>
+
+    <p id="deptMsg" style="color:#81d4fa;margin-top:10px;"></p>
+
+    <hr style="border-color:#333;margin:14px 0;">
+
+    <!-- DISPATCH ACTIONS -->
+    <h4 style="color:#4fc3f7;margin:0 0 6px;">Dispatch Actions</h4>
+
+    <div class="row">
+      <div>
+        <label>Assign Unit to Call</label>
+        <input id="assignUnit" placeholder="Unit ID">
+      </div>
+      <div>
+        <label>Call ID</label>
+        <input id="assignCall" placeholder="1">
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button class="btn-primary" onclick="assignUnitToCall()">Assign</button>
+      </div>
+    </div>
+
+    <hr style="border-color:#333;margin:14px 0;">
+
+    <!-- QUICK STATUS BUTTONS -->
+    <h4 style="color:#4fc3f7;margin:0 0 6px;">Quick Status</h4>
+
+    <div class="row">
+      <button onclick="setStatus('10-8')">10‑8 (In Service)</button>
+      <button onclick="setStatus('10-6')">10‑6 (Busy)</button>
+      <button onclick="setStatus('10-7')">10‑7 (Out of Service)</button>
+      <button onclick="setStatus('10-23')">10‑23 (On Scene)</button>
+      <button onclick="setStatus('10-97')">10‑97 (Arrived)</button>
+    </div>
+
+    <p style="margin-top:10px;color:#81d4fa;" id="statusMsg"></p>
   </div>
 
-  <!-- INCIDENT ATTACHMENTS -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'attachments')">
-      <span class="arrow">▶</span> Incident Attachments
-    </button>
-    <div id="attachments" class="content">
-      <p>No attachments uploaded.</p>
-    </div>
+  <!-- UNIT LOGIN PANEL -->
+  <div class="panel" id="panel-login" style="display:none;">
+    <h3>Unit Login</h3>
+
+    <label>Unit ID</label>
+    <input id="loginUnit" placeholder="A-12">
+
+    <label>Department</label>
+    <select id="loginDept">
+      <option value="PD">Police Department</option>
+      <option value="SO">Sheriff’s Office</option>
+      <option value="FD">Fire Department</option>
+      <option value="EMS">EMS / Medical</option>
+      <option value="DOT">DOT / Tow</option>
+    </select>
+
+    <button class="btn-primary" onclick="unitLogin()">Login</button>
+    <button class="btn-primary" onclick="unitLogout()">Logout Unit</button>
+
+    <p id="loginMsg" style="color:#81d4fa;margin-top:10px;"></p>
   </div>
-
-  <!-- DISPATCHER NOTES -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'notes')">
-      <span class="arrow">▶</span> Dispatcher Notes
-    </button>
-    <div id="notes" class="content">
-      <textarea placeholder="Type dispatcher notes here..."></textarea>
-    </div>
-  </div>
-
-  <!-- CALL HISTORY LOG -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'callHistory')">
-      <span class="arrow">▶</span> Call History Log
-    </button>
-    <div id="callHistory" class="content">
-      <table>
-        <tr><th>ID</th><th>Type</th><th>Status</th></tr>
-        <tr><td>24‑0816‑B12</td><td>Vehicle Theft</td><td>Closed</td></tr>
-        <tr><td>24‑0816‑B13</td><td>Disturbance</td><td>Closed</td></tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- UNIT AVAILABILITY -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'unitAvailability')">
-      <span class="arrow">▶</span> Unit Availability
-    </button>
-    <div id="unitAvailability" class="content">
-      <table>
-        <tr><th>Unit</th><th>Status</th></tr>
-        <tr><td>A‑12</td><td>Busy</td></tr>
-        <tr><td>K‑4</td><td>Busy</td></tr>
-        <tr><td>S‑3</td><td>Available</td></tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- AUTO UPDATE TIMESTAMP -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'timestamp')">
-      <span class="arrow">▶</span> Auto‑Update Timestamp
-    </button>
-    <div id="timestamp" class="content">
-      <p id="timeStamp">Loading...</p>
-    </div>
-  </div>
-
-  <script>
-    function updateTime() {
-      const now = new Date();
-      document.getElementById("timeStamp").innerText =
-        now.toLocaleTimeString() + " — Auto‑Sync Enabled";
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
-  </script>
-
-  <!-- CALL CLOSURE -->
-  <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel(this,'callClosure')">
-      <span class="arrow">▶</span> Call Closure Panel
-    </button>
-    <div id="callClosure" class="content">
-      <p id="callStatus">Status: Active — No closure yet.</p>
-      <button onclick="closeCall()">Close Call</button>
-    </div>
-  </div>
-
-  <script>
-    function closeCall() {
-      document.getElementById("callStatus").innerText =
-        "Status: Closed — Report Filed.";
-    }
-  </script>
 
 </div>
+
+<script>
+  let calls = [];
+  let units = [];
+  let nextId = 1;
+
+  function showPanel(name) {
+    document.getElementById('panel-create').style.display = name === 'create' ? 'block' : 'none';
+    document.getElementById('panel-active').style.display = name === 'active' ? 'block' : 'none';
+    document.getElementById('panel-closed').style.display = name === 'closed' ? 'block' : 'none';
+    document.getElementById('panel-dispatch').style.display = name === 'dispatch' ? 'block' : 'none';
+    document.getElementById('panel-login').style.display = name === 'login' ? 'block' : 'none';
+  }
+
+  function createCall() {
+    const call = {
+      id: nextId++,
+      time: new Date().toLocaleTimeString(),
+      type: document.getElementById('callType').value,
+      priority: document.getElementById('priority').value,
+      server: document.getElementById('server').value,
+      location: document.getElementById('location').value || 'Unknown',
+      postal: document.getElementById('postal').value || 'N/A',
+      caller: document.getElementById('caller').value || 'Anonymous',
+      description: document.getElementById('description').value || 'No description.',
+      units: document.getElementById('units').value || 'None',
+      status: 'Active'
+    };
+    calls.push(call);
+    renderCalls();
+    showPanel('active');
+  }
+
+  function renderCalls() {
+    const activeDiv = document.getElementById('activeCalls');
+    const closedDiv = document.getElementById('closedCalls');
+    activeDiv.innerHTML = '';
+    closedDiv.innerHTML = '';
+
+    calls.forEach(call => {
+      const card = document.createElement('div');
+      card.className = 'call-card';
+
+      const header = document.createElement('div');
+      header.className = 'call-header';
+      header.innerHTML = `
+        <div>
+          <strong>Call #${call.id}</strong> - ${call.type}
+          ${priorityTag(call.priority)}
+        </div>
+        <div>
+          <span class="status-pill">${call.status}</span>
+        </div>
+      `;
+      card.appendChild(header);
+
+      const body = document.createElement('div');
+      body.innerHTML = `
+        <div><strong>Time:</strong> ${call.time} | <strong>Server:</strong> ${call.server}</div>
+        <div><strong>Location:</strong> ${call.location} (Postal: ${call.postal})</div>
+        <div><strong>Caller:</strong> ${call.caller}</div>
+        <div><strong>Description:</strong> ${call.description}</div>
+        <div><strong>Units:</strong> ${call.units}</div>
+      `;
+      card.appendChild(body);
+
+      const actions = document.createElement('div');
+      actions.style.marginTop = '6px';
+      actions.innerHTML = `
+        <button onclick="closeCall(${call.id})">Close</button>
+        <button onclick="deleteCall(${call.id})">Delete</button>
+      `;
+      card.appendChild(actions);
+
+      if (call.status === 'Active') {
+        activeDiv.appendChild(card);
+      } else {
+        closedDiv.appendChild(card);
+      }
+    });
+  }
+
+  function priorityTag(p) {
+    if (p === '1') return '<span class="tag tag-prio1">P1</span>';
+    if (p === '2') return '<span class="tag tag-prio2">P2</span>';
+    if (p === '3') return '<span class="tag tag-prio3">P3</span>';
+    return '';
+  }
+
+  function closeCall(id) {
+    const call = calls.find(c => c.id === id);
+    if (call) {
+      call.status = 'Closed';
+      renderCalls();
+    }
+  }
+
+  function deleteCall(id) {
+    calls = calls.filter(c => c.id !== id);
+    renderCalls();
+  }
+
+  function addUnit() {
+    const id = document.getElementById("newUnit").value.trim();
+    if (!id) return;
+
+    units.push({ id, status: "10-8", department: "PD" });
+    document.getElementById("newUnit").value = "";
+    renderUnits();
+  }
+
+  function renderUnits() {
+    const board = document.getElementById("unitBoard");
+    board.innerHTML = "";
+
+    units.forEach(u => {
+      const div = document.createElement("div");
+      div.style.marginBottom = "6px";
+
+      const deptColor = {
+        PD: "#4fc3f7",
+        SO: "#81c784",
+        FD: "#e57373",
+        EMS: "#ffb74d",
+        DOT: "#ba68c8"
+      }[u.department || "PD"];
+
+      div.innerHTML = `
+        <strong>${u.id}</strong>
+        <span style="color:${deptColor};margin-left:6px;">
+          [${u.department || "PD"}]
+        </span>
+        — <span style="color:#4fc3f7">${u.status}</span>
+      `;
+      board.appendChild(div);
+    });
+  }
+
+  function setDepartment() {
+    const unitId = document.getElementById("deptUnit").value.trim();
+    const dept = document.getElementById("deptSelect").value;
+
+    if (!unitId) {
+      document.getElementById("deptMsg").innerText = "Enter a unit ID.";
+      return;
+    }
+
+    const unit = units.find(u => u.id === unitId);
+    if (!unit) {
+      document.getElementById("deptMsg").innerText = "Unit not found.";
+      return;
+    }
+
+    unit.department = dept;
+    renderUnits();
+    document.getElementById("deptMsg").innerText = `${unitId} assigned to ${dept}`;
+  }
+
+  function setStatus(code) {
+    const unitId = prompt("Enter Unit ID to update:");
+    if (!unitId) return;
+
+    const unit = units.find(u => u.id === unitId);
+    if (!unit) {
+      document.getElementById("statusMsg").innerText = "Unit not found.";
+      return;
+    }
+
+    unit.status = code;
+    renderUnits();
+    document.getElementById("statusMsg").innerText = `${unitId} set to ${code}`;
+  }
+
+  function assignUnitToCall() {
+    const unitId = document.getElementById("assignUnit").value.trim();
+    const callId = parseInt(document.getElementById("assignCall").value.trim());
+
+    const call = calls.find(c => c.id === callId);
+    const unit = units.find(u => u.id === unitId);
+
+    if (!call || !unit) {
+      alert("Invalid unit or call ID.");
+      return;
+    }
+
+    call.units += `, ${unitId}`;
+    renderCalls();
+    alert(`${unitId} assigned to Call #${callId}`);
+  }
+
+  function unitLogin() {
+    const id = document.getElementById("loginUnit").value.trim();
+    const dept = document.getElementById("loginDept").value;
+
+    if (!id) {
+      document.getElementById("loginMsg").innerText = "Enter a unit ID.";
+      return;
+    }
+
+    const existing = units.find(u => u.id === id);
+    if (existing) {
+      document.getElementById("loginMsg").innerText = "Unit already logged in.";
+      return;
+    }
+
+    units.push({
+      id,
+      department: dept,
+      status: "10-8"
+    });
+
+    renderUnits();
+    document.getElementById("loginMsg").innerText = `${id} logged in as ${dept}`;
+  }
+
+  function unitLogout() {
+    const id = document.getElementById("loginUnit").value.trim();
+
+    if (!id) {
+      document.getElementById("loginMsg").innerText = "Enter a unit ID to logout.";
+      return;
+    }
+
+    units = units.filter(u => u.id !== id);
+    renderUnits();
+    document.getElementById("loginMsg").innerText = `${id} logged out.`;
+  }
+
+  // default view
+  showPanel('create');
+</script>
 
 </body>
 </html>
