@@ -50,6 +50,42 @@
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+
+  /* Collapsible content */
+  .content {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease;
+  }
+
+  .content.open {
+    max-height: 800px;
+  }
+
+  /* Collapse button */
+  .collapse-btn {
+    background: #111;
+    color: #4fc3f7;
+    padding: 8px 12px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .collapse-btn:hover {
+    background: #1a1a1a;
+  }
+
+  .arrow {
+    transition: transform 0.3s ease;
+  }
+  .arrow.open {
+    transform: rotate(90deg);
   }
 
   /* Animated status lights */
@@ -70,17 +106,6 @@
   .yellow { background: #ffeb3b; }
   .red { background: #ff1744; }
 
-  /* Section headers */
-  h3 {
-    color: #4fc3f7;
-    margin-top: 0;
-  }
-
-  /* Lists */
-  ul {
-    padding-left: 20px;
-  }
-
   /* Search bar */
   .search-bar input {
     width: 100%;
@@ -89,13 +114,6 @@
     border: 1px solid #333;
     color: #fff;
     border-radius: 6px;
-  }
-
-  /* Timeline */
-  .timeline-item {
-    margin-bottom: 8px;
-    padding-left: 12px;
-    border-left: 2px solid #4fc3f7;
   }
 
   /* Radio feed */
@@ -145,21 +163,6 @@
   table th {
     background: #1e1e1e;
   }
-
-  /* Collapsible buttons */
-  .collapse-btn {
-    background: #111;
-    color: #4fc3f7;
-    padding: 8px 12px;
-    border: 1px solid #333;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    display: inline-block;
-  }
-  .collapse-btn:hover {
-    background: #1a1a1a;
-  }
 </style>
 </head>
 
@@ -178,10 +181,23 @@
 <!-- MAIN -->
 <div class="main">
 
+  <!-- TEMPLATE FOR COLLAPSIBLE PANELS -->
+  <script>
+    function togglePanel(btn, id) {
+      const content = document.getElementById(id);
+      const arrow = btn.querySelector(".arrow");
+
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+  </script>
+
   <!-- LIVE STATUS BAR -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('liveStatus')">🔽 Live Status Bar</button>
-    <div id="liveStatus">
+    <button class="collapse-btn" onclick="togglePanel(this,'liveStatus')">
+      <span class="arrow">▶</span> Live Status Bar
+    </button>
+    <div id="liveStatus" class="content">
       <p><span class="status-light green"></span> System Online</p>
       <p><span class="status-light yellow"></span> Units En Route</p>
       <p><span class="status-light green"></span> CAD Sync Active</p>
@@ -190,16 +206,20 @@
 
   <!-- SEARCH BAR -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('searchBar')">🔽 Search Bar</button>
-    <div id="searchBar" class="search-bar">
+    <button class="collapse-btn" onclick="togglePanel(this,'searchBar')">
+      <span class="arrow">▶</span> Search Bar
+    </button>
+    <div id="searchBar" class="content">
       <input type="text" placeholder="Search calls, units, locations...">
     </div>
   </div>
 
   <!-- CALL CLASSIFICATION TAGS -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('callTags')">🔽 Call Classification Tags</button>
-    <div id="callTags">
+    <button class="collapse-btn" onclick="togglePanel(this,'callTags')">
+      <span class="arrow">▶</span> Call Classification Tags
+    </button>
+    <div id="callTags" class="content">
       <span style="background:#4fc3f7;padding:4px 8px;border-radius:6px;">Suspicious Person</span>
       <span style="background:#ff7043;padding:4px 8px;border-radius:6px;">Property Crime</span>
       <span style="background:#81c784;padding:4px 8px;border-radius:6px;">Non‑Violent</span>
@@ -208,34 +228,60 @@
 
   <!-- CALL TIMELINE -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('timeline')">🔽 Call Timeline</button>
-    <div id="timeline">
-      <div class="timeline-item">15:08 — Call Received</div>
-      <div class="timeline-item">15:09 — Units Dispatched</div>
-      <div class="timeline-item">15:10 — CCTV Activated</div>
+    <button class="collapse-btn" onclick="togglePanel(this,'timeline')">
+      <span class="arrow">▶</span> Call Timeline
+    </button>
+    <div id="timeline" class="content">
+      <div>15:08 — Call Received</div>
+      <div>15:09 — Units Dispatched</div>
+      <div>15:10 — CCTV Activated</div>
     </div>
   </div>
 
   <!-- UNIT RADIO FEED -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('radioFeed')">🔽 Unit Radio Feed</button>
-    <div id="radioFeed" class="radio-feed">
-      <p>[A‑12] En route, ETA 2 minutes.</p>
-      <p>[K‑4] Area sweep beginning.</p>
-      <p>[S‑3] CCTV shows subject still on foot.</p>
+    <button class="collapse-btn" onclick="togglePanel(this,'radioFeed')">
+      <span class="arrow">▶</span> Unit Radio Feed
+    </button>
+    <div id="radioFeed" class="content">
+      <div class="radio-feed" id="radioBox">
+        <p>[A‑12] En route, ETA 2 minutes.</p>
+        <p>[K‑4] Area sweep beginning.</p>
+        <p>[S‑3] CCTV shows subject still on foot.</p>
+      </div>
+      <input id="radioInput" type="text" placeholder="Send radio message...">
+      <button onclick="addRadio()">Send</button>
     </div>
   </div>
 
+  <script>
+    function addRadio() {
+      const box = document.getElementById("radioBox");
+      const input = document.getElementById("radioInput");
+      if (input.value.trim() !== "") {
+        box.innerHTML += `<p>${input.value}</p>`;
+        input.value = "";
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+  </script>
+
   <!-- MAP PANEL -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('mapPanel')">🔽 Map Panel</button>
-    <div id="mapPanel" class="map-box">MAP LOADING...</div>
+    <button class="collapse-btn" onclick="togglePanel(this,'mapPanel')">
+      <span class="arrow">▶</span> Map Panel
+    </button>
+    <div id="mapPanel" class="content">
+      <div class="map-box">MAP LOADING...</div>
+    </div>
   </div>
 
   <!-- OFFICER ACTIONS -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('officerActions')">🔽 Officer Actions</button>
-    <div id="officerActions">
+    <button class="collapse-btn" onclick="togglePanel(this,'officerActions')">
+      <span class="arrow">▶</span> Officer Actions
+    </button>
+    <div id="officerActions" class="content">
       <ul>
         <li>A‑12: Approaching location.</li>
         <li>K‑4: Checking alleyway.</li>
@@ -246,8 +292,10 @@
 
   <!-- UNIT GPS STATUS -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('gpsStatus')">🔽 Unit GPS Status</button>
-    <div id="gpsStatus">
+    <button class="collapse-btn" onclick="togglePanel(this,'gpsStatus')">
+      <span class="arrow">▶</span> Unit GPS Status
+    </button>
+    <div id="gpsStatus" class="content">
       <ul>
         <li>A‑12 — 0.8 miles out</li>
         <li>K‑4 — 1.1 miles out</li>
@@ -258,24 +306,30 @@
 
   <!-- INCIDENT ATTACHMENTS -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('attachments')">🔽 Incident Attachments</button>
-    <div id="attachments">
+    <button class="collapse-btn" onclick="togglePanel(this,'attachments')">
+      <span class="arrow">▶</span> Incident Attachments
+    </button>
+    <div id="attachments" class="content">
       <p>No attachments uploaded.</p>
     </div>
   </div>
 
   <!-- DISPATCHER NOTES -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('notes')">🔽 Dispatcher Notes</button>
-    <div id="notes">
+    <button class="collapse-btn" onclick="togglePanel(this,'notes')">
+      <span class="arrow">▶</span> Dispatcher Notes
+    </button>
+    <div id="notes" class="content">
       <textarea placeholder="Type dispatcher notes here..."></textarea>
     </div>
   </div>
 
   <!-- CALL HISTORY LOG -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('callHistory')">🔽 Call History Log</button>
-    <div id="callHistory">
+    <button class="collapse-btn" onclick="togglePanel(this,'callHistory')">
+      <span class="arrow">▶</span> Call History Log
+    </button>
+    <div id="callHistory" class="content">
       <table>
         <tr><th>ID</th><th>Type</th><th>Status</th></tr>
         <tr><td>24‑0816‑B12</td><td>Vehicle Theft</td><td>Closed</td></tr>
@@ -286,8 +340,10 @@
 
   <!-- UNIT AVAILABILITY -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('unitAvailability')">🔽 Unit Availability</button>
-    <div id="unitAvailability">
+    <button class="collapse-btn" onclick="togglePanel(this,'unitAvailability')">
+      <span class="arrow">▶</span> Unit Availability
+    </button>
+    <div id="unitAvailability" class="content">
       <table>
         <tr><th>Unit</th><th>Status</th></tr>
         <tr><td>A‑12</td><td>Busy</td></tr>
@@ -299,29 +355,43 @@
 
   <!-- AUTO UPDATE TIMESTAMP -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('timestamp')">🔽 Auto‑Update Timestamp</button>
-    <div id="timestamp">
-      <p>15:14 BST — Auto‑Sync Enabled</p>
+    <button class="collapse-btn" onclick="togglePanel(this,'timestamp')">
+      <span class="arrow">▶</span> Auto‑Update Timestamp
+    </button>
+    <div id="timestamp" class="content">
+      <p id="timeStamp">Loading...</p>
     </div>
   </div>
+
+  <script>
+    function updateTime() {
+      const now = new Date();
+      document.getElementById("timeStamp").innerText =
+        now.toLocaleTimeString() + " — Auto‑Sync Enabled";
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
 
   <!-- CALL CLOSURE -->
   <div class="panel">
-    <button class="collapse-btn" onclick="togglePanel('callClosure')">🔽 Call Closure Panel</button>
-    <div id="callClosure">
-      <p>Status: Active — No closure yet.</p>
+    <button class="collapse-btn" onclick="togglePanel(this,'callClosure')">
+      <span class="arrow">▶</span> Call Closure Panel
+    </button>
+    <div id="callClosure" class="content">
+      <p id="callStatus">Status: Active — No closure yet.</p>
+      <button onclick="closeCall()">Close Call</button>
     </div>
   </div>
 
-</div>
+  <script>
+    function closeCall() {
+      document.getElementById("callStatus").innerText =
+        "Status: Closed — Report Filed.";
+    }
+  </script>
 
-<!-- COLLAPSIBLE PANEL SCRIPT -->
-<script>
-function togglePanel(id) {
-  const panel = document.getElementById(id);
-  panel.style.display = panel.style.display === "none" ? "block" : "none";
-}
-</script>
+</div>
 
 </body>
 </html>
