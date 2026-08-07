@@ -146,6 +146,9 @@
   <button onclick="showPanel('closed')">Closed Calls</button>
   <button onclick="showPanel('dispatch')">Dispatch Console</button>
   <button onclick="showPanel('login')">Unit Login</button>
+
+  <!-- ⭐ MDT BUTTON ⭐ -->
+  <button onclick="window.location.href='mdt.html'">Unit MDT</button>
 </div>
 
 <div class="main">
@@ -520,50 +523,4 @@
 
     call.units += `, ${unitId}`;
     renderCalls();
-    alert(`${unitId} assigned to Call #${callId}`);
-  }
-
-  function unitLogin() {
-    const id = document.getElementById("loginUnit").value.trim();
-    const dept = document.getElementById("loginDept").value;
-
-    if (!id) {
-      document.getElementById("loginMsg").innerText = "Enter a unit ID.";
-      return;
-    }
-
-    const existing = units.find(u => u.id === id);
-    if (existing) {
-      document.getElementById("loginMsg").innerText = "Unit already logged in.";
-      return;
-    }
-
-    units.push({
-      id,
-      department: dept,
-      status: "10-8"
-    });
-
-    renderUnits();
-    document.getElementById("loginMsg").innerText = `${id} logged in as ${dept}`;
-  }
-
-  function unitLogout() {
-    const id = document.getElementById("loginUnit").value.trim();
-
-    if (!id) {
-      document.getElementById("loginMsg").innerText = "Enter a unit ID to logout.";
-      return;
-    }
-
-    units = units.filter(u => u.id !== id);
-    renderUnits();
-    document.getElementById("loginMsg").innerText = `${id} logged out.`;
-  }
-
-  // default view
-  showPanel('create');
-</script>
-
-</body>
-</html>
+    alert(`${unitId} assigned to Call
