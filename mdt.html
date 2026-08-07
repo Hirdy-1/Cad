@@ -47,6 +47,16 @@
     border-radius: 8px;
     margin-bottom: 10px;
   }
+
+  input {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    background: #0f1118;
+    border: 1px solid #333;
+    color: #f5f5f5;
+    border-radius: 4px;
+  }
 </style>
 </head>
 
@@ -59,6 +69,7 @@
   <input id="unitId" placeholder="A-12">
 
   <button onclick="login()">Login</button>
+  <button onclick="window.location.href='index.html'">Back to CAD</button>
 
   <p id="msg" style="color:#81d4fa;"></p>
 </div>
@@ -112,7 +123,7 @@
     const div = document.getElementById("mdtCalls");
     div.innerHTML = "";
 
-    const assigned = calls.filter(c => c.units.includes(loggedUnit.id));
+    const assigned = calls.filter(c => (c.units || "").includes(loggedUnit.id));
 
     if (assigned.length === 0) {
       div.innerHTML = "<p>No assigned calls.</p>";
