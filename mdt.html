@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unit MDT</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0b0b10;
+    color: #f5f5f5;
+    padding: 20px;
+  }
+
+  .panel {
+    background: #141722;
+    border-radius: 10px;
+    border: 1px solid #333;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    color: #4fc3f7;
+    margin-top: 0;
+  }
+
+  button {
+    padding: 8px 12px;
+    background: #4fc3f7;
+    border: none;
+    color: #000;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background: #81d4fa;
+  }
+
+  .call-card {
+    background: #1a1d27;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+  <h2>Unit MDT Login</h2>
+
+  <label>Unit ID</label>
+  <input id="unitId" placeholder="A-12">
+
+  <button onclick="login()">Login</button>
+
+  <p id="msg" style="color:#81d4fa;"></p>
+</div>
+
+<div class="panel" id="mdtPanel" style="display:none;">
+  <h2>MDT Dashboard</h2>
+
+  <p><strong>Unit:</strong> <span id="mdtUnit"></span></p>
+  <p><strong>Department:</strong> <span id="mdtDept"></span></p>
+  <p><strong>Status:</strong> <span id="mdtStatus"></span></p>
+
+  <h3 style="color:#4fc3f7;">Assigned Calls</h3>
+  <div id="mdtCalls"></div>
+
+  <h3 style="color:#4fc3f7;">Update Status</h3>
+  <button onclick="setStatus('10-8')">10‑8</button>
+  <button onclick="setStatus('10-6')">10‑6</button>
+  <button onclick="setStatus('10-7')">10‑7</button>
+  <button onclick="setStatus('10-23')">10‑23</button>
+  <button onclick="setStatus('10-97')">10‑97</button>
+
+  <p id="statusMsg" style="color:#81d4fa;"></p>
+</div>
+
+<script>
+  let units = JSON.parse(localStorage.getItem("units") || "[]");
+  let calls = JSON.parse(localStorage.getItem("calls") || "[]");
+  let loggedUnit = null;
+
+  function login() {
+    const id = document.getElementById("unitId").value.trim();
+    const unit = units.find(u => u.id === id);
+
+    if (!unit) {
+      document.getElementById("msg").innerText = "Unit not found.";
+      return;
+    }
+
+    loggedUnit = unit;
+    document.getElementById("msg").innerText = "";
+    document.getElementById("mdtPanel").style.display = "block";
+
+    document.getElementById("mdtUnit").innerText = unit.id;
+    document.getElementById("mdtDept").innerText = unit.department;
+    document.getElementById("mdtStatus").innerText = unit.status;
+
+    loadCalls();
+  }
+
+  function loadCalls() {
+    const div = document.getElementById("mdtCalls");
+    div.innerHTML = "";
+
+    const assigned = calls.filter(c => c.units.includes(loggedUnit.id));
+
+    if (assigned.length === 0) {
+      div.innerHTML = "<p>No assigned calls.</p>";
+      return;
+    }
+
+    assigned.forEach(call => {
+      const card = document.createElement("div");
+      card.className = "call-card";
+      card.innerHTML = `
+        <strong>Call #${call.id}</strong><br>
+        <strong>Type:</strong> ${call.type}<br>
+        <strong>Location:</strong> ${call.location}<br>
+        <strong>Description:</strong> ${call.description}<br>
+        <strong>Status:</strong> ${call.status}
+      `;
+      div.appendChild(card);
+    });
+  }
+
+  function setStatus(code) {
+    loggedUnit.status = code;
+    localStorage.setItem("units", JSON.stringify(units));
+    document.getElementById("mdtStatus").innerText = code;
+    document.getElementById("statusMsg").innerText = "Status updated.";
+  }
+</script>
+
+</body>
+</html>
