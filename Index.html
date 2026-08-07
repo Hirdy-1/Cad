@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dark‑Ops CAD Console</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0a0a0a;
+    color: #eaeaea;
+    display: flex;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: rgba(20,20,20,0.6);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid #222;
+    padding: 20px;
+    height: 100vh;
+  }
+  .sidebar h2 {
+    color: #4fc3f7;
+    margin-bottom: 10px;
+  }
+  .sidebar a {
+    display: block;
+    padding: 10px 0;
+    color: #b3e5fc;
+    text-decoration: none;
+    border-bottom: 1px solid #333;
+  }
+
+  /* Main container */
+  .main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  /* Glass panel */
+  .panel {
+    background: rgba(30,30,30,0.45);
+    backdrop-filter: blur(10px);
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* Animated status lights */
+  .status-light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+  }
+  .green { background: #00e676; }
+  .yellow { background: #ffeb3b; }
+  .red { background: #ff1744; }
+
+  /* Section headers */
+  h3 {
+    color: #4fc3f7;
+    margin-top: 0;
+  }
+
+  /* Lists */
+  ul {
+    padding-left: 20px;
+  }
+
+  /* Search bar */
+  .search-bar input {
+    width: 100%;
+    padding: 10px;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 6px;
+  }
+
+  /* Timeline */
+  .timeline-item {
+    margin-bottom: 8px;
+    padding-left: 12px;
+    border-left: 2px solid #4fc3f7;
+  }
+
+  /* Radio feed */
+  .radio-feed {
+    height: 120px;
+    overflow-y: auto;
+    background: #111;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #333;
+  }
+
+  /* Map placeholder */
+  .map-box {
+    height: 200px;
+    background: #222;
+    border-radius: 10px;
+    border: 1px solid #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-size: 1.2rem;
+  }
+
+  /* Dispatcher notes */
+  textarea {
+    width: 100%;
+    height: 120px;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  table td, table th {
+    border: 1px solid #333;
+    padding: 8px;
+  }
+  table th {
+    background: #1e1e1e;
+  }
+
+  /* Collapsible buttons */
+  .collapse-btn {
+    background: #111;
+    color: #4fc3f7;
+    padding: 8px 12px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+  .collapse-btn:hover {
+    background: #1a1a1a;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Dispatch Menu</h2>
+  <a href="#">Active Calls</a>
+  <a href="#">Units</a>
+  <a href="#">Call History</a>
+  <a href="#">Reports</a>
+  <a href="#">Settings</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LIVE STATUS BAR -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('liveStatus')">🔽 Live Status Bar</button>
+    <div id="liveStatus">
+      <p><span class="status-light green"></span> System Online</p>
+      <p><span class="status-light yellow"></span> Units En Route</p>
+      <p><span class="status-light green"></span> CAD Sync Active</p>
+    </div>
+  </div>
+
+  <!-- SEARCH BAR -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('searchBar')">🔽 Search Bar</button>
+    <div id="searchBar" class="search-bar">
+      <input type="text" placeholder="Search calls, units, locations...">
+    </div>
+  </div>
+
+  <!-- CALL CLASSIFICATION TAGS -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('callTags')">🔽 Call Classification Tags</button>
+    <div id="callTags">
+      <span style="background:#4fc3f7;padding:4px 8px;border-radius:6px;">Suspicious Person</span>
+      <span style="background:#ff7043;padding:4px 8px;border-radius:6px;">Property Crime</span>
+      <span style="background:#81c784;padding:4px 8px;border-radius:6px;">Non‑Violent</span>
+    </div>
+  </div>
+
+  <!-- CALL TIMELINE -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('timeline')">🔽 Call Timeline</button>
+    <div id="timeline">
+      <div class="timeline-item">15:08 — Call Received</div>
+      <div class="timeline-item">15:09 — Units Dispatched</div>
+      <div class="timeline-item">15:10 — CCTV Activated</div>
+    </div>
+  </div>
+
+  <!-- UNIT RADIO FEED -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('radioFeed')">🔽 Unit Radio Feed</button>
+    <div id="radioFeed" class="radio-feed">
+      <p>[A‑12] En route, ETA 2 minutes.</p>
+      <p>[K‑4] Area sweep beginning.</p>
+      <p>[S‑3] CCTV shows subject still on foot.</p>
+    </div>
+  </div>
+
+  <!-- MAP PANEL -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('mapPanel')">🔽 Map Panel</button>
+    <div id="mapPanel" class="map-box">MAP LOADING...</div>
+  </div>
+
+  <!-- OFFICER ACTIONS -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('officerActions')">🔽 Officer Actions</button>
+    <div id="officerActions">
+      <ul>
+        <li>A‑12: Approaching location.</li>
+        <li>K‑4: Checking alleyway.</li>
+        <li>S‑3: Monitoring CCTV angles.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- UNIT GPS STATUS -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('gpsStatus')">🔽 Unit GPS Status</button>
+    <div id="gpsStatus">
+      <ul>
+        <li>A‑12 — 0.8 miles out</li>
+        <li>K‑4 — 1.1 miles out</li>
+        <li>S‑3 — Stationary (HQ)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- INCIDENT ATTACHMENTS -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('attachments')">🔽 Incident Attachments</button>
+    <div id="attachments">
+      <p>No attachments uploaded.</p>
+    </div>
+  </div>
+
+  <!-- DISPATCHER NOTES -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('notes')">🔽 Dispatcher Notes</button>
+    <div id="notes">
+      <textarea placeholder="Type dispatcher notes here..."></textarea>
+    </div>
+  </div>
+
+  <!-- CALL HISTORY LOG -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('callHistory')">🔽 Call History Log</button>
+    <div id="callHistory">
+      <table>
+        <tr><th>ID</th><th>Type</th><th>Status</th></tr>
+        <tr><td>24‑0816‑B12</td><td>Vehicle Theft</td><td>Closed</td></tr>
+        <tr><td>24‑0816‑B13</td><td>Disturbance</td><td>Closed</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- UNIT AVAILABILITY -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('unitAvailability')">🔽 Unit Availability</button>
+    <div id="unitAvailability">
+      <table>
+        <tr><th>Unit</th><th>Status</th></tr>
+        <tr><td>A‑12</td><td>Busy</td></tr>
+        <tr><td>K‑4</td><td>Busy</td></tr>
+        <tr><td>S‑3</td><td>Available</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- AUTO UPDATE TIMESTAMP -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('timestamp')">🔽 Auto‑Update Timestamp</button>
+    <div id="timestamp">
+      <p>15:14 BST — Auto‑Sync Enabled</p>
+    </div>
+  </div>
+
+  <!-- CALL CLOSURE -->
+  <div class="panel">
+    <button class="collapse-btn" onclick="togglePanel('callClosure')">🔽 Call Closure Panel</button>
+    <div id="callClosure">
+      <p>Status: Active — No closure yet.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- COLLAPSIBLE PANEL SCRIPT -->
+<script>
+function togglePanel(id) {
+  const panel = document.getElementById(id);
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
+</script>
+
+</body>
+</html>
